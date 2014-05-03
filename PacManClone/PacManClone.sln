@@ -5,6 +5,8 @@ Project("{07EDB4F3-78A3-D716-9389-10793611512E}") = "PacManClone", "Assembly-CSh
 EndProject
 Project("{07EDB4F3-78A3-D716-9389-10793611512E}") = "PacManClone", "Assembly-CSharp.csproj", "{BD7BA23E-EB8E-15D5-F1DF-A004F2BEDB8F}"
 EndProject
+Project("{07EDB4F3-78A3-D716-9389-10793611512E}") = "PacManClone", "Assembly-CSharp-Editor.csproj", "{1B149D82-A88A-5EF3-7BBF-5848391F1BEC}"
+EndProject
 Project("{07EDB4F3-78A3-D716-9389-10793611512E}") = "PacManClone", "Assembly-UnityScript-firstpass.unityproj", "{E9E0299B-2A23-3B11-812F-AFE9C8246F73}"
 EndProject
 Project("{07EDB4F3-78A3-D716-9389-10793611512E}") = "PacManClone", "Assembly-UnityScript.unityproj", "{38C70841-7485-EAE1-B2AD-066D6D9F9628}"
@@ -23,6 +25,10 @@ Global
 		{BD7BA23E-EB8E-15D5-F1DF-A004F2BEDB8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD7BA23E-EB8E-15D5-F1DF-A004F2BEDB8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD7BA23E-EB8E-15D5-F1DF-A004F2BEDB8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B149D82-A88A-5EF3-7BBF-5848391F1BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B149D82-A88A-5EF3-7BBF-5848391F1BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B149D82-A88A-5EF3-7BBF-5848391F1BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B149D82-A88A-5EF3-7BBF-5848391F1BEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9E0299B-2A23-3B11-812F-AFE9C8246F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9E0299B-2A23-3B11-812F-AFE9C8246F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9E0299B-2A23-3B11-812F-AFE9C8246F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,7 +41,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																											GlobalSection(MonoDevelopProperties) = preSolution
+																																																																																								GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1

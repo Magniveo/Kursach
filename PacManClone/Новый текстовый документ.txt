@@ -1,0 +1,276 @@
+using UnityEngine;
+using System.Collections;
+
+public class IISoldie : MonoBehaviour
+{
+    public Transform finih;
+    RaycastHit Hit;
+    bool stena,  stenaTime;
+    Vector3 PovorotDlaObxoda;
+    Transform TargetPregrada;
+    Vector3 NapravlenieLy4a;
+    public Transform[] ForvardRay;
+    public Transform[] LeftRay;
+    public Transform[] RightRay;
+    Transform[] pointRay;
+    int distansRay = 3;
+    public float speedCube = 3;
+    float timeFlag;
+
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+    void Update()
+    {
+	        // ѕолучаем контроллер
+        _controller = GetComponent<CharacterController>();
+ 
+        // ѕолучаем компонент трансформации объекта, к которому прив€зан данный компонент
+        _thisTransform = transform;
+ 
+        // ѕолучаем компонент трансформации игрока
+        Player finih = (Player)FindObjectOfType(typeof(Player));
+        _playerTransform = player.transform;
+        Debug.Log(Vector3.Distance(finih.position, transform.position));
+        //непрерывное движение куба пока то не достигнет цели
+        if (Vector3.Distance(finih.position, transform.position) > 3)
+        {
+            transform.position += transform.forward * speedCube * Time.deltaTime;
+        }
+        if (!stena)
+        {
+            //дебаг лини€ от куба к цели
+            Debug.DrawLine(finih.position, transform.position, Color.red);
+            //поворот в направлении основной цели
+            transform.rotation = Quaternion.Slerp(transform.localRotation, Quaternion.LookRotation(finih.position - transform.position), Time.deltaTime * 2f);
+            NapravlenieLy4a = transform.forward;
+            pointRay = ForvardRay;
+            distansRay = 2;
+        }
+        else
+        {
+            // мен€ем направление луча в случае запуска опции обхода преграды
+            NapravlenieLy4a = OptionRay(TargetPregrada, transform);
+            //мен€ем точки пускани€ лучей на самые ближние к преграде
+            pointRay = NapravlenieLy4a == -transform.right ? LeftRay : RightRay;
+            distansRay = 4;
+        }
+        byte rayIntPoint = 0;
+        for (int i = 0; i < pointRay.Length; i++)
+        {
+            //лучи в дебаге
+            Debug.DrawRay(pointRay[i].position, NapravlenieLy4a, Color.green);
+            //пускаем лучи из выбранных точек
+            if (Physics.Raycast(pointRay[i].position, NapravlenieLy4a, out Hit, distansRay))
+            {
+                if (NapravlenieLy4a == transform.forward)
+                {
+                    stena = true;
+                    TargetPregrada = Hit.transform;
+                    //поворачиваем наш кубик к ближайшему краю преграды
+                    transform.localRotation = Quaternion.Euler(OptionDirection(TargetPregrada,transform));
+                }
+                else stena = true;
+                break;
+            }
+            else if (NapravlenieLy4a != transform.forward && !stenaTime )
+            {
+                rayIntPoint++;
+                if (rayIntPoint >= pointRay.Length)
+                {
+                    //разворачиваем кубик в исходное положение и даем ему 1 секунду чтобы пройти мимо преграды и не цепл€тс€ за кра€, 
+                    //далее снова включаем курс на конечную цель
+                    timeFlag = Time.time;
+                    stenaTime = true;
+                    Vector3 povorot = TargetPregrada.rotation.eulerAngles;
+                    transform.localRotation = Quaternion.Euler(povorot);
+                }
+            }
+        }
+        if (timeFlag + 1 < Time.time && stenaTime)
+        {
+            stenaTime = false;
+            stena = false;
+        }   
+    }
+    //выбор направлени€ обхода преп€тстви€.
+    Vector3 OptionDirection(Transform block, Transform myTransform)
+    {
+      Vector3 vec =  block.transform.rotation.eulerAngles;
+      vec.y  = block.transform.position.x < myTransform.position.x ? vec.y += 90 : vec.y -= 90;
+      return vec;
+    }
+    //выбор направлни€ лучей
+   Vector3  OptionRay(Transform block, Transform myTransform)
+    {
+       Vector3 vec;
+     return  vec = TargetPregrada.position.x < myTransform.position.x ? -myTransform.right : myTransform.right;
+    }
+}
+
+
+ѕриерна€ агентна€ система 
+
+
+public class GhostControls2 : MonoBehaviour
+{
+
+     public void Init(GhostBehavior ghost)
+     {
+          this.ghost = ghost;
+     }
+
+     public virtual void Act(List<GhostData> ghostsData)
+     {
+          // no operation
+     }
+
+     protected GhostBehavior ghost;
+}
+
+void Start ()
+{
+     
+     controls = GetComponent<GhostControl>();
+     if(controls != null)
+     {
+          controls.Init(this);
+     }
+     
+}
+процедурна€ генераци€
+dungeon procedural generation
+
+
+var idleAnimation : AnimationClip;
+var walkAnimation : AnimationClip;
+var attackAnimation : AnimationClip;
+var hp : float = 100.0f;
+var dead : GameObject;
+var damage : float = 3.5f;
+var delay : float = 1.0f;
+private var time : float;
+
+function Start () {
+animation.AddClip(idleAnimation, "idle");
+animation.AddClip(walkAnimation, "walk");
+animation.AddClip(attackAnimation, "attack");
+target = GameObject.FindWithTag("Player").transform;
+nav = GetComponent(NavMeshAgent);
+}
+
+function ApplyDamage(d : float) {
+hp -=d;
+if(hp<=0) {
+Instantiate(dead, transform.position, transform.rotation);
+Destroy(gameObject);
+}
+}
+
+function Update () {
+
+if(Vector3.Distance(transform.position, target.transform.position) < seeDistance) {
+if(Vector3.Distance(transform.position, target.transform.position) > attackDistance) {
+animation.CrossFade("walk");
+nav.enabled = true;
+nav.SetDestination(target.position);
+}else{
+if(Time.time > time) {
+animation.CrossFade("attack");
+nav.enabled = false;
+target.SendMessage("ApplyDamage", damage, SendMessageOptions.DontRequireReceiver);
+time = Time.time + delay;
+}
+
+}
+}else{
+animation.CrossFade("idle");
+nav.enabled = false;
+}
+
+}
+  using UnityEngine;
+    using System.Collections;
+ 
+    public class EnemyAI : MonoBehaviour 
+    {
+        public Transform target;//This is what the AI looks for, the Target must  be tagged "Player"
+        public int moveSpeed;// This is a base value of how fast the AI moves
+        public int rotationSpeed;// This is a Base Value of how fast the AI rotates
+        public int powerWalkMultiplier = 2;//The Multiplier for Power Walking
+        public int runSpeedMultiplier = 4;//The Multiplier for Running
+        public float patrolRangePos = 0.0f;//How far does the AI patrol
+        public float patrolRangeNeg = 0.0f;//^
+        private float patrolInc = 0.25f;// increment of the Patrol
+        private Vector3 patrolAmount;
+        private Transform myTransform;
+ 
+        void Awake()
+        {
+           myTransform = transform;//Keeps it Active
+        }
+ 
+        // Use this for initialization
+        void Start () 
+        {
+           GameObject go = GameObject.FindGameObjectWithTag("Player");
+ 
+           target = go.transform;
+ 
+        }
+ 
+        // Update is called once per frame
+        void Update () 
+        {
+           Debug.DrawLine(target.position, myTransform.position, Color.green);//Plots course
+ 
+           float distance = Vector3.Distance (this.transform.position, GameObject.FindGameObjectWithTag("Player").transform.position);//Calculate Distance
+ 
+           if(distance < 10.0)//Chase Range
+           {
+             //Debug.LogWarning("Enemy Sighted! Pursuing!!!");
+             Debug.DrawLine(target.position, myTransform.position, Color.red);
+             //Look At Target, Oh look! Target!
+             myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed*Time.deltaTime);
+             //This takes the Cube's transform via a Slerp, it's a rotation based on the angle it's loking at 
+ 
+ 
+             //Move to Target, Hooray Savings!
+             myTransform.position += myTransform.forward * (moveSpeed * runSpeedMultiplier) * Time.deltaTime;//Trigger Run Speed
+           }//End Chase Range
+           else if(distance < 20.0)//Investigate Range
+           {
+             //Debug.LogWarning("Enemy Detected, Investigating...");
+             Debug.DrawLine(target.position, myTransform.position, Color.yellow);
+             //Look At Target, Oh look! Target!
+             myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(target.position - myTransform.position), rotationSpeed*Time.deltaTime);
+             //This takes the Cube's transform via a Slerp, it's a rotation based on the angle it's loking at 
+ 
+ 
+             //Move to Target, Hooray Savings!
+             myTransform.position += myTransform.forward * (moveSpeed * powerWalkMultiplier) * Time.deltaTime;//Trigger power walk Speed
+           }//End Investigate Range
+           else if(distance > 20.0)//Patrol Range
+           {
+ 
+             //Debug.LogWarning("Lost Target, returning to patrol");
+ 
+             //Look for Target, Where are the savings... Savings!
+             patrolAmount.x = patrolInc * ((float)moveSpeed * 2f) * Time.deltaTime;
+ 
+                if (patrolInc > 0.0f && transform.position.x >= patrolRangePos)
+             {
+                    patrolInc = -1.0f;
+             }
+             else if (patrolInc < 0.0f && transform.position.x <= patrolRangeNeg)
+             {
+                  patrolInc = 1.0f;
+             }
+                transform.Translate(patrolAmount);
+           }
+ 
+        }
+ 
+    }
